@@ -70,19 +70,65 @@ export default function MisRutinas({ cambiarVista }) {
             <p className="text-gray-500 italic col-span-full">No hay rutinas guardadas. ¡Crea la primera!</p>
           ) : (
             baseDeDatosRutinas.map(rutina => (
-              <div key={rutina.id} onClick={() => setRutinaSeleccionada(rutina)} className="relative group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl cursor-pointer transition-all hover:border-fuchsia-500/50 hover:shadow-[0_0_20px_rgba(217,70,239,0.2)] flex flex-col justify-between h-32">
-                
+              <div key={rutina.id} onClick={() => setRutinaSeleccionada(rutina)} className="relative group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl cursor-pointer transition-all hover:border-fuchsia-500/50 hover:shadow-[0_0_20px_rgba(217,70,239,0.2)] flex flex-col justify-between min-h-[160px]">
+
                 <h2 className="text-xl font-bold text-gray-100 group-hover:text-fuchsia-300 transition-colors pr-10">{rutina.nombre}</h2>
-                
-                <div className="flex justify-between items-center text-sm text-gray-400">
+
+                <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
                   <span>{rutina.etapas.length} etapas</span>
                   <span className="font-mono bg-black/40 px-2 py-1 rounded text-fuchsia-400">
                     {rutina.etapas.reduce((total, etapa) => total + (etapa.duracionMinutos || 0), 0)} min
                   </span>
                 </div>
 
+                {/* INYECTAR EN LA TARJETA DE CADA RUTINA EN MisRutinas.jsx */}
+                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                  {(() => {
+                    const historial = JSON.parse(localStorage.getItem('gymos_historial')) || [];
+                    const sedes = JSON.parse(localStorage.getItem('gymos_sedes')) || [];
+
+                    const usos = historial.filter(h => h.rutinaId === rutina.id);
+                    const ultimoUso = usos[usos.length - 1];
+
+                    if (!ultimoUso) return <span className="text-xs text-gray-600">No agendada aún</span>;
+
+                    const sede = sedes.find(s => s.id === ultimoUso.sedeId);
+                    if (!sede) return null;
+
+                    return (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Último uso:</span>
+                        <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-md border border-white/10">
+                          {sede.tipo === 'internet'
+                            ? (
+                              <img
+                                src={sede.logo}
+                                className="w-4 h-4 rounded-full object-cover bg-white"
+                                alt="logo"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(sede.nombre)}&background=22d3ee&color=fff&rounded=true&bold=true`;
+                                }}
+                              />
+                            )
+                            : (
+                              <span className={`w-4 h-4 ${sede.color}`}>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                              </span>
+                            )
+                          }
+                          <span className="text-xs text-cyan-400 font-medium truncate max-w-[120px]" title={sede.nombre}>
+                            {sede.nombre}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                {/* --- FIN DEL BLOQUE INYECTADO --- */}
+
                 {/* BOTÓN ELIMINAR (Visible al hacer hover) */}
-                <button 
+                <button
                   onClick={(e) => eliminarRutina(e, rutina.id)}
                   className="absolute top-4 right-4 p-2 bg-black/40 text-gray-400 hover:text-rose-500 hover:bg-rose-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all border border-transparent hover:border-rose-500/30"
                   title="Eliminar Rutina"

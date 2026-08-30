@@ -4,6 +4,7 @@ import MisRutinas from './views/MisRutinas';
 import Cronometro from './views/Cronometro';
 import Agenda from './views/Agenda';
 import CreadorRutina from './views/CreadorRutina';
+import GestorSedes from './views/GestorSedes';
 
 export default function GymOS() {
   // Estado que controla qué pantalla estamos viendo
@@ -75,6 +76,9 @@ export default function GymOS() {
       
       {/* 4. Pantalla de Agenda */}
       {vistaActual === 'agenda' && <Agenda cambiarVista={setVistaActual} />}
+      
+      {/* 5. Pantalla del Gestor de Sedes */}
+      {vistaActual === 'gestorSedes' && <GestorSedes cambiarVista={setVistaActual} />}
     </>
   );
 }

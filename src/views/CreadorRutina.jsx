@@ -80,12 +80,20 @@ export default function CreadorRutina({ cambiarVista }) {
     setEtapaEnConstruccion({ id: 'temp', modalidad: 'Fuerza', duracionMinutos: 10, audioPista: 'Sin Audio', tieneAudioPersonalizado: false, listaEjercicios: [] });
   };
 
-  const guardarRutina = () => {
-    const rutinaNueva = { id: `rutina_${Date.now()}`, nombre: nombreRutina, etapas: etapas };
-    const rutinasGuardadas = JSON.parse(localStorage.getItem('gymos_rutinas')) || [];
-    localStorage.setItem('gymos_rutinas', JSON.stringify([...rutinasGuardadas, rutinaNueva]));
-    cambiarVista('rutinas');
-  };
+  const guardarRutinaDefinitiva = () => {
+  const rutinaNueva = { id: `rutina_${Date.now()}`, nombre: nombreRutina, etapas: etapas };
+  const rutinasGuardadas = JSON.parse(localStorage.getItem('gymos_rutinas')) || [];
+  localStorage.setItem('gymos_rutinas', JSON.stringify([...rutinasGuardadas, rutinaNueva]));
+
+  // Lógica de retorno
+  const retorno = localStorage.getItem('gymos_retorno');
+  if (retorno) {
+    localStorage.removeItem('gymos_retorno'); // Limpiamos la memoria
+    cambiarVista(retorno);
+  } else {
+    cambiarVista('rutinas'); // Comportamiento normal si no venimos de la agenda
+  }
+};
 
   return (
     <>
@@ -101,7 +109,7 @@ export default function CreadorRutina({ cambiarVista }) {
               className="flex-1 bg-transparent text-3xl font-bold text-white placeholder-gray-600 focus:outline-none focus:border-b-2 focus:border-fuchsia-500 transition-colors pb-1"
             />
           </div>
-          <button onClick={guardarRutina} disabled={!nombreRutina || etapas.length === 0} className="px-8 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl font-bold transition-all">
+          <button onClick={guardarRutinaDefinitiva} disabled={!nombreRutina || etapas.length === 0} className="px-8 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl font-bold transition-all">
             Guardar Rutina Completa
           </button>
         </header>
