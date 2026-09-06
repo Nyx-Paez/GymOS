@@ -5,6 +5,7 @@ import Cronometro from './views/Cronometro';
 import Agenda from './views/Agenda';
 import CreadorRutina from './views/CreadorRutina';
 import GestorSedes from './views/GestorSedes';
+import BibliotecaAudios from './views/BibliotecaAudios';
 
 export default function GymOS() {
   // Estado que controla qué pantalla estamos viendo
@@ -79,6 +80,9 @@ export default function GymOS() {
       
       {/* 5. Pantalla del Gestor de Sedes */}
       {vistaActual === 'gestorSedes' && <GestorSedes cambiarVista={setVistaActual} />}
+      
+      {/* 6. Pantalla de la Biblioteca de Audios */}
+      {vistaActual === 'bibliotecaAudios' && <BibliotecaAudios cambiarVista={setVistaActual} />}
     </>
   );
 }
