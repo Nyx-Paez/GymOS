@@ -107,14 +107,14 @@ export default function BibliotecaAudios({ cambiarVista }) {
   return (
     <div className="min-h-screen w-screen bg-gray-900 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900 via-gray-900 to-black p-4 md:p-8">
       {/* HEADER */}
-      <header className="flex justify-between items-center mb-8 border-b border-white/10 pb-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-6">
-          <button onClick={() => cambiarVista('dashboard')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5">
-            <svg className="w-6 h-6 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-4 max-w-7xl mx-auto">
+        <div className="flex items-center gap-4 md:gap-6 w-full overflow-hidden">
+          <button onClick={() => cambiarVista('lanzador')} className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 shrink-0">
+            <svg className="w-5 h-5 md:w-6 md:h-6 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           </button>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Discoteca <span className="text-cyan-400">Gym-OS</span></h1>
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent truncate">Biblioteca de Audios</h1>
         </div>
-        <button onClick={() => setModalAbierto(true)} className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 rounded-xl font-bold text-white transition-all shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+        <button onClick={() => setModalAbierto(true)} className="px-6 py-3 border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(52,211,153,0.1)] text-sm md:text-base shrink-0 self-start sm:self-auto">
           + Subir Pista
         </button>
       </header>
