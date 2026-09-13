@@ -555,7 +555,7 @@ export default function CreadorRutina({ cambiarVista }) {
                           <span className="text-white font-bold text-lg group-hover:text-cyan-300 capitalize pr-8">{ej.name}</span>
                         </div>
                         <div className="flex justify-between items-center mt-3 w-full">
-                          <span className="text-xs font-mono bg-black/50 text-gray-400 px-2 py-1 rounded-md capitalize">{ej.equipment || "N/A"}</span>
+                          <span className="text-xs font-mono bg-black/20 border border-white/10 text-gray-400 px-2 py-1 rounded-md capitalize">{ej.equipment || "N/A"}</span>
                           <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">{ej.category || "N/A"}</span>
                         </div>
                       </button>

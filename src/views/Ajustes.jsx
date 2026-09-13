@@ -25,6 +25,9 @@ export default function Ajustes({ cambiarVista }) {
   const cambiarTema = (nuevoTema) => {
     setTema(nuevoTema);
     localStorage.setItem('furia_tema', nuevoTema);
+    
+    // MÁGIA: Inyecta la clase directamente al HTML para que toda la app cambie al instante
+    document.body.className = `tema-${nuevoTema}`;
   };
 
   const enviarSugerencia = (e) => {
@@ -46,10 +49,10 @@ export default function Ajustes({ cambiarVista }) {
       {/* HEADER */}
       <header className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6 max-w-4xl mx-auto">
         <button onClick={() => cambiarVista('lanzador')} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 shrink-0">
-          <svg className="w-6 h-6 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
         </button>
         <div className="overflow-hidden">
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-300 to-gray-400 bg-clip-text text-transparent truncate">Ajustes del Sistema</h1>
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-sky-500 bg-clip-text text-transparent truncate">Ajustes del Sistema</h1>
           <p className="text-gray-400 text-xs md:text-sm mt-1 truncate">Personaliza la visualización de la app.</p>
         </div>
       </header>
@@ -86,7 +89,7 @@ export default function Ajustes({ cambiarVista }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { id: 'cyberpunk', nombre: 'Cyber Neon (Actual)', desc: 'Cyan, fucsia y fondos oscuros profundos', color: 'from-cyan-500 to-fuchsia-600' },
-              { id: 'minimal', nombre: 'Midnight Minimal', desc: 'Tonos grises limpios y profesionales', color: 'from-slate-600 to-gray-800' },
+              { id: 'claro', nombre: 'Modo Claro', desc: 'Fondos blancos y grises limpios', color: 'from-gray-300 to-gray-500' },
               { id: 'energetico', nombre: 'Furia Amber', desc: 'Naranjas y ámbar de alta energía', color: 'from-amber-500 to-rose-600' },
             ].map(t => (
               <div

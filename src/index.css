@@ -1,1 +1,123 @@
 @import "tailwindcss";
+
+/* =========================================
+   SISTEMA DE TEMAS DINÁMICOS
+   ========================================= */
+
+/* --- TEMA 1: CLARO (Minimalista y Profesional) --- */
+.tema-claro {
+  background-color: #f3f4f6 !important; /* Fondo general gris muy sutil */
+  color: #111827 !important; /* Texto general oscuro */
+}
+
+/* 1. Fondos oscuros generales -> Grises Claros */
+.tema-claro .bg-gray-900,
+.tema-claro .bg-gray-800,
+.tema-claro .bg-black,
+.tema-claro .from-gray-900,
+.tema-claro .via-gray-900,
+.tema-claro .from-gray-800,
+.tema-claro .to-black {
+  background: #f3f4f6 !important;
+  background-image: none !important;
+}
+
+/* 2. Tarjetas y Contenedores -> Blancos con sombra elegante */
+.tema-claro .bg-white\/5,
+.tema-claro .bg-black\/40,
+.tema-claro .bg-black\/20 {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 3. Modales oscuros (fondo negro con opacidad) -> Blanco translúcido */
+.tema-claro .bg-black\/80 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* 4. Forzar TODO el texto claro a oscuro (Arregla títulos invisibles) */
+.tema-claro .text-white,
+.tema-claro .text-gray-100,
+.tema-claro .text-gray-200,
+.tema-claro .text-gray-300 {
+  color: #111827 !important;
+}
+
+.tema-claro .text-gray-400, 
+.tema-claro .text-gray-500 {
+  color: #4b5563 !important; /* Gris medio legible para subtítulos */
+}
+
+/* 5. FIX BOTONES DESACTIVADOS (Soluciona los botones negros de Guardar) */
+.tema-claro button:disabled {
+  background-color: #e5e7eb !important; /* Fondo gris claro */
+  color: #9ca3af !important; /* Texto gris medio */
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 6. Mantener texto blanco en botones de colores activos */
+.tema-claro button.bg-cyan-600,
+.tema-claro button.bg-fuchsia-600,
+.tema-claro button.bg-amber-600,
+.tema-claro button.bg-emerald-600 {
+  color: #ffffff !important;
+}
+
+/* 7. FIX FORMULARIOS (Soluciona el texto invisible al escribir y los bordes) */
+.tema-claro input, 
+.tema-claro textarea, 
+.tema-claro select {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.tema-claro input::placeholder,
+.tema-claro textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* 8. Colores de acento para adaptarlos al fondo blanco */
+.tema-claro .text-cyan-400 { color: #0284c7 !important; } 
+.tema-claro .text-fuchsia-400 { color: #c026d3 !important; } 
+.tema-claro .text-amber-400 { color: #d97706 !important; } 
+.tema-claro .text-emerald-400 { color: #059669 !important; }
+
+/* 9. Bordes Generales sutiles */
+.tema-claro .border-white\/10, 
+.tema-claro .border-white\/5 {
+  border-color: #d1d5db !important;
+}
+
+/* 10. FIX ETIQUETAS GRISES (Soluciona las pastillas de "Peso Corporal", etc) */
+.tema-claro .bg-gray-700,
+.tema-claro .bg-gray-600 {
+  background-color: #e5e7eb !important; /* Gris bien clarito */
+  color: #111827 !important; /* Texto oscuro */
+  border: 1px solid #d1d5db !important; /* Bordecito sutil para que resalte */
+}
+
+/* --- TEMA 2: ENERGÉTICO (Tonos cálidos de alta energía) --- */
+/* Convierte los tonos Cyan/Fucsia en Amarillos, Naranjas y Rojos */
+
+.tema-energetico .text-cyan-400 { color: #facc15 !important; } /* yellow-400 */
+.tema-energetico .text-fuchsia-400 { color: #f97316 !important; } /* orange-500 */
+.tema-energetico .text-cyan-300 { color: #fef08a !important; }
+
+/* Botones principales y bordes */
+.tema-energetico .bg-cyan-600 { background-color: #eab308 !important; }
+.tema-energetico .hover\:bg-cyan-500:hover { background-color: #facc15 !important; color: #000 !important;}
+.tema-energetico .border-cyan-500\/50, .tema-energetico .border-cyan-500\/30 { border-color: rgba(250, 204, 21, 0.4) !important; }
+.tema-energetico .bg-cyan-500\/10 { background-color: rgba(250, 204, 21, 0.1) !important; }
+
+.tema-energetico .border-fuchsia-500\/50, .tema-energetico .border-fuchsia-500\/30 { border-color: rgba(249, 115, 22, 0.4) !important; }
+.tema-energetico .bg-fuchsia-500\/10 { background-color: rgba(249, 115, 22, 0.1) !important; }
+
+/* Gradientes de títulos */
+.tema-energetico .from-cyan-400 { --tw-gradient-from: #facc15 !important; }
+.tema-energetico .to-blue-500 { --tw-gradient-to: #ea580c !important; }
+.tema-energetico .from-fuchsia-400 { --tw-gradient-from: #f97316 !important; }
+.tema-energetico .to-purple-500 { --tw-gradient-to: #e11d48 !important; }

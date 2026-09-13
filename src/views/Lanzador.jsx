@@ -55,7 +55,8 @@ export default function Lanzador({ cambiarVista }) {
     { 
       id: 'ajustes', 
       nombre: 'Ajustes', 
-      color: 'from-slate-600/20 to-gray-600/20 border-slate-500/30 text-slate-300',
+      /* Le sacamos el gris (slate) y le ponemos azules vibrantes */
+      color: 'from-blue-600/20 to-sky-600/20 border-blue-500/30 text-blue-400',
       icono: (
         <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />

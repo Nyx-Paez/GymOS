@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Lanzador from './views/Lanzador';
 import MisRutinas from './views/MisRutinas';
 import Cronometro from './views/Cronometro';
@@ -11,6 +11,12 @@ import Ajustes from './views/Ajustes';
 
 export default function FuriaGymPlanner() {
   const [vistaActual, setVistaActual] = useState('lanzador'); 
+
+  // Inyectar el tema visual apenas arranca la app
+  useEffect(() => {
+    const temaGuardado = localStorage.getItem('furia_tema') || 'cyberpunk';
+    document.body.className = `tema-${temaGuardado}`;
+  }, []);
 
   return (
     <>

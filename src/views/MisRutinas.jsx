@@ -59,17 +59,17 @@ export default function MisRutinas({ cambiarVista }) {
     return (
       <div className="min-h-screen w-full bg-gray-900 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black text-white p-4 md:p-8 overflow-x-hidden">
         {/* HEADER */}
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-4 max-w-7xl mx-auto">
-        <div className="flex items-center gap-4 md:gap-6 w-full overflow-hidden">
-          <button onClick={() => cambiarVista('lanzador')} className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 shrink-0">
-            <svg className="w-5 h-5 md:w-6 md:h-6 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-4 max-w-7xl mx-auto">
+          <div className="flex items-center gap-4 md:gap-6 w-full overflow-hidden">
+            <button onClick={() => cambiarVista('lanzador')} className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 shrink-0">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            </button>
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-fuchsia-400 to-purple-500 bg-clip-text text-transparent truncate">Mis Rutinas</h1>
+          </div>
+          <button onClick={() => cambiarVista('creadorRutina')} className="px-5 py-2 md:px-6 md:py-3 border border-fuchsia-500/50 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 text-fuchsia-400 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(217,70,239,0.1)] text-sm md:text-base shrink-0 self-start">
+            + Crear Nueva
           </button>
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-fuchsia-400 to-purple-500 bg-clip-text text-transparent truncate">Mis Rutinas</h1>
-        </div>
-        <button onClick={() => cambiarVista('creadorRutina')} className="px-5 py-2 md:px-6 md:py-3 border border-fuchsia-500/50 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 text-fuchsia-400 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(217,70,239,0.1)] text-sm md:text-base shrink-0 self-start">
-          + Crear Nueva
-        </button>
-      </header>
+        </header>
 
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {baseDeDatosRutinas.length === 0 ? (
@@ -78,7 +78,7 @@ export default function MisRutinas({ cambiarVista }) {
             baseDeDatosRutinas.map(rutina => (
               <div key={rutina.id} onClick={() => setRutinaSeleccionada(rutina)} className="relative group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl cursor-pointer transition-all hover:border-fuchsia-500/50 hover:shadow-[0_0_20px_rgba(217,70,239,0.2)] flex flex-col justify-between min-h-[160px]">
 
-                <h2 className="text-xl font-bold text-gray-100 group-hover:text-fuchsia-300 transition-colors pr-16">{rutina.nombre}</h2>
+                <h2 className="text-xl font-bold text-gray-100 group-hover:text-fuchsia-300 transition-colors pr-20">{rutina.nombre}</h2>
 
                 <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
                   <span>{rutina.etapas.length} etapas</span>
@@ -118,18 +118,18 @@ export default function MisRutinas({ cambiarVista }) {
                   })()}
                 </div>
 
-                {/* BOTONERA FLOTANTE (Visible al hacer hover o siempre en mobile) */}
+                {/* BOTONERA FLOTANTE VISTA 1 (CORREGIDA) */}
                 <div className="absolute top-4 right-4 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all">
                   <button
                     onClick={(e) => editarRutina(e, rutina)}
-                    className="p-2 bg-black/60 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 rounded-lg border border-transparent hover:border-cyan-500/30 backdrop-blur-md"
+                    className="p-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 rounded-lg transition-colors border border-cyan-500/20 backdrop-blur-md"
                     title="Editar Rutina"
                   >
                     <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </button>
                   <button
                     onClick={(e) => eliminarRutina(e, rutina.id)}
-                    className="p-2 bg-black/60 text-gray-400 hover:text-rose-500 hover:bg-rose-500/20 rounded-lg border border-transparent hover:border-rose-500/30 backdrop-blur-md"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg transition-colors border border-rose-500/20 backdrop-blur-md"
                     title="Eliminar Rutina"
                   >
                     <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -149,7 +149,7 @@ export default function MisRutinas({ cambiarVista }) {
   // ==========================================
   return (
     <div className="min-h-screen w-full bg-gray-900 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black text-white p-4 md:p-8 overflow-x-hidden">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 border-b border-white/10 pb-6 gap-4">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 border-b border-white/10 pb-6 gap-4 max-w-7xl mx-auto">
         
         <div className="flex items-center gap-4 md:gap-6 w-full md:w-auto">
           <button onClick={() => setRutinaSeleccionada(null)} className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-xl backdrop-blur-md transition-colors border border-white/10 shrink-0">
@@ -160,21 +160,22 @@ export default function MisRutinas({ cambiarVista }) {
           </h1>
         </div>
 
-        {/* BOTONES DE EDICIÓN Y BORRADO DESDE ADENTRO */}
-        <div className="flex gap-2 w-full md:w-auto">
+        {/* BOTONES DE ACCIÓN VISTA 2 (CORREGIDA CON FUNCIONES) */}
+        <div className="flex gap-2 shrink-0">
           <button 
-            onClick={(e) => editarRutina(e, rutinaSeleccionada)}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500 rounded-xl font-bold transition-all text-sm md:text-base"
+            onClick={() => editarRutina(null, rutinaSeleccionada)} 
+            className="p-2 md:p-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 rounded-lg transition-colors border border-cyan-500/20"
+            title="Editar rutina"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-            Editar
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
           </button>
+          
           <button 
-            onClick={(e) => eliminarRutina(e, rutinaSeleccionada.id)}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:border-rose-500 rounded-xl font-bold transition-all text-sm md:text-base"
+            onClick={() => eliminarRutina(null, rutinaSeleccionada.id)} 
+            className="p-2 md:p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg transition-colors border border-rose-500/20"
+            title="Eliminar rutina"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            Eliminar
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
           </button>
         </div>
 
