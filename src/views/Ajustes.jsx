@@ -88,7 +88,7 @@ export default function Ajustes({ cambiarVista }) {
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { id: 'cyberpunk', nombre: 'Cyber Neon (Actual)', desc: 'Cyan, fucsia y fondos oscuros profundos', color: 'from-cyan-500 to-fuchsia-600' },
+              { id: 'cyberpunk', nombre: 'Cyber Neon', desc: 'Cyan, fucsia y fondos oscuros profundos', color: 'from-cyan-500 to-fuchsia-600' },
               { id: 'claro', nombre: 'Modo Claro', desc: 'Fondos blancos y grises limpios', color: 'from-gray-300 to-gray-500' },
               { id: 'energetico', nombre: 'Furia Amber', desc: 'Naranjas y ámbar de alta energía', color: 'from-amber-500 to-rose-600' },
             ].map(t => (

@@ -6,34 +6,60 @@ export default function MisRutinas({ cambiarVista }) {
   const [etapas, setEtapas] = useState([]);
   const [baseDeDatosRutinas, setBaseDeDatosRutinas] = useState([]);
 
+  // --- NUEVOS ESTADOS PARA EL MODO REPRODUCTOR ---
+  const [modoReproduccion, setModoReproduccion] = useState(false);
+  const [indiceEtapa, setIndiceEtapa] = useState(0);
+  const [tiempoRestante, setTiempoRestante] = useState(0);
+  const [timerCorriendo, setTimerCorriendo] = useState(false);
+
   useEffect(() => {
     const rutinasGuardadas = JSON.parse(localStorage.getItem('gymos_rutinas')) || [];
     setBaseDeDatosRutinas(rutinasGuardadas);
   }, []);
 
-  // --- NUEVA FUNCIÓN: EDITAR RUTINA ---
+  // --- LÓGICA DEL RELOJ DEL REPRODUCTOR ---
+  useEffect(() => {
+    let intervalo = null;
+    if (timerCorriendo && tiempoRestante > 0) {
+      intervalo = setInterval(() => setTiempoRestante(prev => prev - 1), 1000);
+    } else if (tiempoRestante === 0 && timerCorriendo) {
+      setTimerCorriendo(false);
+      // ¡Acá a futuro conectaremos el sonido de FIN DE ETAPA!
+    }
+    return () => clearInterval(intervalo);
+  }, [timerCorriendo, tiempoRestante]);
+
+  // --- FUNCIONES DE NAVEGACIÓN DEL REPRODUCTOR ---
+  const iniciarReproduccion = (indice = 0) => {
+    setIndiceEtapa(indice);
+    setTiempoRestante((etapas[indice]?.duracionMinutos || 0) * 60);
+    setModoReproduccion(true);
+    setTimerCorriendo(false);
+  };
+
+  const cambiarEtapa = (nuevoIndice) => {
+    if(nuevoIndice >= 0 && nuevoIndice < etapas.length) {
+      setIndiceEtapa(nuevoIndice);
+      setTiempoRestante((etapas[nuevoIndice]?.duracionMinutos || 0) * 60);
+      setTimerCorriendo(false);
+    }
+  };
+
+  // --- FUNCIONES DE EDICIÓN Y BORRADO ---
   const editarRutina = (e, rutina) => {
-    if (e) e.stopPropagation(); // Evita que se abra la rutina si tocamos el botón desde la grilla
-    // Guardamos la rutina en un estado temporal
+    if (e) e.stopPropagation();
     localStorage.setItem('gymos_rutina_a_editar', JSON.stringify(rutina));
     localStorage.setItem('gymos_retorno', 'rutinas'); 
-    // Le avisamos a la app que cambie a la pantalla del Creador
     cambiarVista('creadorRutina'); 
   };
 
-  // --- NUEVA FUNCIÓN: ELIMINAR RUTINA COMPLETA ---
   const eliminarRutina = (e, idRutina) => {
     if (e) e.stopPropagation(); 
-    
-    const confirmacion = window.confirm("¿Estás seguro de que querés eliminar esta rutina para siempre?");
-    if (confirmacion) {
+    if (window.confirm("¿Estás seguro de que querés eliminar esta rutina para siempre?")) {
       const nuevasRutinas = baseDeDatosRutinas.filter(rutina => rutina.id !== idRutina);
       setBaseDeDatosRutinas(nuevasRutinas);
       localStorage.setItem('gymos_rutinas', JSON.stringify(nuevasRutinas));
-      
-      if (rutinaSeleccionada && rutinaSeleccionada.id === idRutina) {
-        setRutinaSeleccionada(null);
-      }
+      if (rutinaSeleccionada && rutinaSeleccionada.id === idRutina) setRutinaSeleccionada(null);
     }
   };
 
@@ -53,12 +79,117 @@ export default function MisRutinas({ cambiarVista }) {
   useEffect(() => { if (rutinaSeleccionada) setEtapas(rutinaSeleccionada.etapas); }, [rutinaSeleccionada]);
 
   // ==========================================
+  // VISTA 3: MODO REPRODUCTOR (PANTALLA COMPLETA)
+  // ==========================================
+  if (modoReproduccion) {
+    const etapaActual = etapas[indiceEtapa];
+    const min = Math.floor(tiempoRestante / 60);
+    const seg = tiempoRestante % 60;
+    const tiempoFormat = `${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}`;
+    const progreso = ((indiceEtapa + 1) / etapas.length) * 100;
+
+    return (
+      <div className="fixed inset-0 z-50 bg-gray-900 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900 via-gray-900 to-black text-white flex flex-col overflow-hidden">
+        {/* BARRA DE PROGRESO DE LA CLASE */}
+        <div className="w-full h-2 md:h-3 bg-gray-800 shrink-0">
+          <div className="h-full bg-cyan-500 transition-all duration-500 shadow-[0_0_15px_rgba(34,211,238,0.5)]" style={{ width: `${progreso}%` }}></div>
+        </div>
+
+        {/* HEADER DEL REPRODUCTOR */}
+        <header className="flex justify-between items-center p-4 md:p-6 border-b border-white/10 shrink-0 bg-black/20 backdrop-blur-md">
+          <button onClick={() => { setModoReproduccion(false); setTimerCorriendo(false); }} className="p-3 bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-500 rounded-xl transition-all border border-white/5">
+            <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+          <div className="text-center">
+            <h2 className="text-xl md:text-3xl font-bold text-cyan-400 truncate max-w-[200px] md:max-w-md">{rutinaSeleccionada.nombre}</h2>
+            <p className="text-xs md:text-sm text-gray-400 uppercase tracking-widest mt-1">Etapa {indiceEtapa + 1} de {etapas.length}</p>
+          </div>
+          <div className="w-12 md:w-14"></div> {/* Spacer para centrar el título */}
+        </header>
+
+        {/* CONTENIDO DIVIDIDO */}
+        <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
+          
+          {/* MITAD IZQUIERDA: TIMER Y CONTROLES */}
+          <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 border-b md:border-b-0 md:border-r border-white/10 relative">
+            
+            <h3 className="text-3xl md:text-5xl font-bold text-fuchsia-400 mb-2">{etapaActual.modalidad}</h3>
+            {etapaActual.audioPista !== "Sin Audio" && (
+              <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full mb-8 md:mb-12 border border-white/10">
+                <span className="text-cyan-400">🎵</span>
+                <span className="text-sm font-medium text-gray-300">{etapaActual.audioPista}</span>
+              </div>
+            )}
+
+            {/* RELOJ GIGANTE */}
+            <div className="relative flex justify-center items-center mb-8 md:mb-12 w-full">
+               <div className={`absolute w-[50vw] h-[50vw] md:w-[25rem] md:h-[25rem] rounded-full blur-[80px] md:blur-[100px] transition-all duration-1000 ${timerCorriendo ? 'bg-cyan-600/20 scale-110' : 'bg-gray-700/10 scale-90'}`}></div>
+               <h1 className="text-[25vw] md:text-[8rem] font-black tabular-nums tracking-tighter leading-none z-10 drop-shadow-[0_0_30px_rgba(34,211,238,0.3)]">
+                 {tiempoFormat}
+               </h1>
+            </div>
+
+            {/* CONTROLES DE REPRODUCCIÓN */}
+            <div className="flex items-center gap-4 md:gap-8 z-10">
+              <button onClick={() => cambiarEtapa(indiceEtapa - 1)} disabled={indiceEtapa === 0} className="p-4 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 border border-white/5 transition-all">
+                <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+
+              <button onClick={() => setTimerCorriendo(!timerCorriendo)} className={`p-6 md:p-8 rounded-full border-4 shadow-lg transition-all ${timerCorriendo ? 'bg-rose-500 border-rose-400 text-white shadow-[0_0_40px_rgba(244,63,94,0.4)] hover:scale-105' : 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_40px_rgba(34,211,238,0.4)] hover:scale-105'}`}>
+                {timerCorriendo ? (
+                  <svg className="w-10 h-10 md:w-12 md:h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path></svg>
+                ) : (
+                  <svg className="w-10 h-10 md:w-12 md:h-12 translate-x-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                )}
+              </button>
+
+              <button onClick={() => cambiarEtapa(indiceEtapa + 1)} disabled={indiceEtapa === etapas.length - 1} className="p-4 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 border border-white/5 transition-all">
+                <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          </div>
+
+          {/* MITAD DERECHA: LISTA DE EJERCICIOS */}
+          <div className="w-full md:w-1/2 bg-black/40 overflow-y-auto p-6 md:p-8 no-scrollbar">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Ejercicios de la Etapa</h3>
+            <div className="flex flex-col gap-4">
+              {etapaActual.listaEjercicios.map((bloque, index) => (
+                <div key={index} className="p-5 md:p-6 bg-white/5 border border-white/10 rounded-2xl shadow-lg">
+                  {bloque.tipo === "simple" ? (
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                      <span className="text-xl md:text-2xl font-bold text-white capitalize">{bloque.ejercicio.nombre}</span>
+                      <span className="text-xl font-mono text-cyan-400 font-bold bg-cyan-500/10 border border-cyan-500/20 px-4 py-2 rounded-xl self-start sm:self-auto text-center">{bloque.ejercicio.cantidad}</span>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex flex-col gap-3 mb-4">
+                        {bloque.ejercicios.map((ej, i) => (
+                          <div key={i} className="flex items-center gap-3">
+                            {i > 0 && <span className="text-fuchsia-500 font-bold text-xl">+</span>}
+                            <span className="text-lg md:text-xl font-bold text-gray-200 capitalize">{ej}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t border-white/10 pt-4 text-left sm:text-right">
+                        <span className="inline-block text-xl font-mono text-fuchsia-400 font-bold bg-fuchsia-500/10 border border-fuchsia-500/20 px-4 py-2 rounded-xl">{bloque.cantidad}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ==========================================
   // VISTA 1: LISTA DE RUTINAS
   // ==========================================
   if (!rutinaSeleccionada) {
     return (
       <div className="min-h-screen w-full bg-gray-900 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black text-white p-4 md:p-8 overflow-x-hidden">
-        {/* HEADER */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-6 gap-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-4 md:gap-6 w-full overflow-hidden">
             <button onClick={() => cambiarVista('lanzador')} className="p-2 md:p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 shrink-0">
@@ -81,61 +212,20 @@ export default function MisRutinas({ cambiarVista }) {
                 <h2 className="text-xl font-bold text-gray-100 group-hover:text-fuchsia-300 transition-colors pr-20">{rutina.nombre}</h2>
 
                 <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
-                  <span>{rutina.etapas.length} etapas</span>
+                  <span>{rutina.etapas?.length || 0} etapas</span>
                   <span className="font-mono bg-black/40 px-2 py-1 rounded text-fuchsia-400 font-bold">
-                    {rutina.etapas.reduce((total, etapa) => total + (etapa.duracionMinutos || 0), 0)} min
+                    {(rutina.etapas || []).reduce((total, etapa) => total + (etapa.duracionMinutos || 0), 0)} min
                   </span>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                  {(() => {
-                    const historial = JSON.parse(localStorage.getItem('gymos_historial')) || [];
-                    const sedes = JSON.parse(localStorage.getItem('gymos_sedes')) || [];
-
-                    const usos = historial.filter(h => h.rutinaId === rutina.id);
-                    const ultimoUso = usos[usos.length - 1];
-
-                    if (!ultimoUso) return <span className="text-xs text-gray-600 font-bold uppercase tracking-wider">No agendada aún</span>;
-
-                    const sede = sedes.find(s => s.id === ultimoUso.sedeId);
-                    if (!sede) return null;
-
-                    return (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Último uso:</span>
-                        <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-md border border-white/10">
-                          {sede.tipo === 'internet' ? (
-                            <img src={sede.logo} className="w-4 h-4 rounded-full object-cover bg-white" alt="logo" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(sede.nombre)}&background=22d3ee&color=fff&rounded=true&bold=true`; }} />
-                          ) : (
-                            <span className={`w-4 h-4 ${sede.color}`}>
-                              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            </span>
-                          )}
-                          <span className="text-xs text-cyan-400 font-medium truncate max-w-[120px]" title={sede.nombre}>{sede.nombre}</span>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-
-                {/* BOTONERA FLOTANTE VISTA 1 (CORREGIDA) */}
                 <div className="absolute top-4 right-4 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all">
-                  <button
-                    onClick={(e) => editarRutina(e, rutina)}
-                    className="p-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 rounded-lg transition-colors border border-cyan-500/20 backdrop-blur-md"
-                    title="Editar Rutina"
-                  >
+                  <button onClick={(e) => editarRutina(e, rutina)} className="p-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 rounded-lg transition-colors border border-cyan-500/20 backdrop-blur-md" title="Editar">
                     <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </button>
-                  <button
-                    onClick={(e) => eliminarRutina(e, rutina.id)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg transition-colors border border-rose-500/20 backdrop-blur-md"
-                    title="Eliminar Rutina"
-                  >
+                  <button onClick={(e) => eliminarRutina(e, rutina.id)} className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg transition-colors border border-rose-500/20 backdrop-blur-md" title="Eliminar">
                     <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                   </button>
                 </div>
-
               </div>
             ))
           )}
@@ -160,22 +250,23 @@ export default function MisRutinas({ cambiarVista }) {
           </h1>
         </div>
 
-        {/* BOTONES DE ACCIÓN VISTA 2 (CORREGIDA CON FUNCIONES) */}
-        <div className="flex gap-2 shrink-0">
-          <button 
-            onClick={() => editarRutina(null, rutinaSeleccionada)} 
-            className="p-2 md:p-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 rounded-lg transition-colors border border-cyan-500/20"
-            title="Editar rutina"
-          >
-            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-          </button>
+        <div className="flex gap-4 w-full md:w-auto shrink-0">
+          <div className="flex gap-2">
+            <button onClick={() => editarRutina(null, rutinaSeleccionada)} className="p-2 md:p-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 rounded-xl transition-colors border border-cyan-500/20">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+            </button>
+            <button onClick={() => eliminarRutina(null, rutinaSeleccionada.id)} className="p-2 md:p-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl transition-colors border border-rose-500/20">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            </button>
+          </div>
           
+          {/* EL NUEVO BOTÓN GIGANTE PARA INICIAR CLASE */}
           <button 
-            onClick={() => eliminarRutina(null, rutinaSeleccionada.id)} 
-            className="p-2 md:p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg transition-colors border border-rose-500/20"
-            title="Eliminar rutina"
+            onClick={() => iniciarReproduccion(0)} 
+            className="flex-1 md:flex-none px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(34,211,238,0.3)] flex items-center justify-center gap-2"
           >
-            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            Iniciar Clase
           </button>
         </div>
 
@@ -183,8 +274,16 @@ export default function MisRutinas({ cambiarVista }) {
 
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20 max-w-7xl mx-auto">
         {etapas.map((etapa, index) => (
-          <div key={etapa.id} draggable onDragStart={(e) => dragStart(e, index)} onDragOver={dragEnter} onDrop={(e) => dragEnd(e, index)} className="cursor-grab active:cursor-grabbing">
+          <div key={etapa.id} draggable onDragStart={(e) => dragStart(e, index)} onDragOver={dragEnter} onDrop={(e) => dragEnd(e, index)} className="cursor-grab active:cursor-grabbing relative group">
             <PostIt etapa={etapa} />
+            
+            {/* BOTÓN RÁPIDO PARA INICIAR DESDE ESTA ETAPA ESPECÍFICA */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all rounded-2xl flex items-center justify-center">
+              <button onClick={() => iniciarReproduccion(index)} className="px-6 py-3 bg-cyan-500 text-black font-bold rounded-full shadow-[0_0_20px_rgba(34,211,238,0.5)] flex items-center gap-2 hover:scale-105 transition-transform">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                Empezar de acá
+              </button>
+            </div>
           </div>
         ))}
       </main>
